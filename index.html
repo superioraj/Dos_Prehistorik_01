@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>고인돌 1 — 웹 버전</title>
+  <link rel="stylesheet" href="js-dos/js-dos.css">
+  <style>
+    html, body { margin: 0; height: 100%; background: #111; color: #ddd;
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    body { display: flex; flex-direction: column; }
+    header { padding: 8px 14px; display: flex; flex-wrap: wrap; gap: 6px 18px;
+      align-items: baseline; background: #1b1b1b; border-bottom: 1px solid #333; }
+    header h1 { margin: 0; font-size: 18px; color: #f0c674; }
+    header .keys { font-size: 13px; color: #aaa; }
+    kbd { background: #333; border: 1px solid #555; border-radius: 3px;
+      padding: 0 5px; font-size: 12px; color: #eee; }
+    #jsdos { flex: 1; min-height: 0; width: 100%; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>고인돌 1</h1>
+    <span class="keys">
+      이동 <kbd>W</kbd><kbd>A</kbd><kbd>D</kbd><kbd>X</kbd> ·
+      공격 <kbd>Tab</kbd> / <kbd>Shift</kbd> ·
+      화면을 한 번 클릭해야 키 입력이 들어갑니다
+    </span>
+  </header>
+  <div id="jsdos"></div>
+
+  <script src="js-dos/js-dos.js"></script>
+  <script>
+    // js-dos 첫 실행 안내(영문 튜토리얼) 창이 게임 화면을 가리지 않도록 끔
+    try {
+      localStorage.setItem("emulators.ui.ui.tipsV2", "false");
+      localStorage.setItem("emulators.ui.ui.autolockTipsV2", "false");
+    } catch (e) {}
+    emulators.pathPrefix = "js-dos/";
+    Dos(document.getElementById("jsdos")).run("goindol1.jsdos");
+  </script>
+</body>
+</html>
