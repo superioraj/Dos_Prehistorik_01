@@ -3,31 +3,193 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>고인돌 1 — 웹 버전</title>
+  <meta name="theme-color" content="#10130f">
+  <title>고인돌 1 — P31 CRT 아케이드</title>
   <link rel="stylesheet" href="js-dos/js-dos.css">
   <style>
-    html, body { margin: 0; height: 100%; background: #111; color: #ddd;
-      font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
-    body { display: flex; flex-direction: column; }
-    header { padding: 8px 14px; display: flex; flex-wrap: wrap; gap: 6px 18px;
-      align-items: baseline; background: #1b1b1b; border-bottom: 1px solid #333; }
-    header h1 { margin: 0; font-size: 18px; color: #f0c674; }
-    header .keys { font-size: 13px; color: #aaa; }
-    kbd { background: #333; border: 1px solid #555; border-radius: 3px;
-      padding: 0 5px; font-size: 12px; color: #eee; }
-    #jsdos { flex: 1; min-height: 0; width: 100%; }
+    :root {
+      color-scheme: dark;
+      --ink: #e4e9d8;
+      --muted: #9aa38c;
+      --lime: #c3ee81;
+      --amber: #ffbd62;
+      --panel: #20241d;
+      --line: #444b3e;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      min-height: 100vh;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse at 50% 40%, #293023 0, #171b15 48%, #0c0e0b 100%);
+      color: var(--ink);
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+
+    .topbar {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 12px clamp(16px, 4vw, 52px);
+      border-bottom: 1px solid #343a30;
+      background: rgba(13, 16, 12, .82);
+      box-shadow: 0 8px 26px #0005;
+      z-index: 2;
+    }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid #71805c;
+      border-radius: 50%;
+      color: var(--lime);
+      font: 700 12px/1 monospace;
+      letter-spacing: -.08em;
+      box-shadow: inset 0 0 12px #a5d56820, 0 0 12px #a5d56814;
+    }
+    h1 { margin: 0; font-size: clamp(17px, 2vw, 21px); letter-spacing: .04em; }
+    .subtitle { display: block; margin-top: 3px; color: var(--muted); font: 10px/1.2 monospace; letter-spacing: .17em; }
+    .system-state { display: flex; align-items: center; gap: 9px; color: #b6c0a9; font: 11px monospace; letter-spacing: .12em; }
+    .led { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 10px #c3ee81; }
+
+    main {
+      flex: 1;
+      min-height: 0;
+      width: min(1200px, 100%);
+      margin: 0 auto;
+      padding: clamp(14px, 3vh, 30px) clamp(12px, 3vw, 34px);
+      display: flex;
+      flex-direction: column;
+    }
+    .monitor-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 0 4px 10px;
+      color: var(--muted);
+      font: 10px monospace;
+      letter-spacing: .14em;
+    }
+    .monitor-label strong { color: var(--amber); font-weight: 500; }
+    .monitor {
+      position: relative;
+      flex: 1;
+      min-height: 180px;
+      padding: clamp(7px, 1.4vw, 14px);
+      overflow: hidden;
+      border: 1px solid #51584a;
+      border-radius: 17px;
+      background: linear-gradient(145deg, #343a30, #1d211b 30%, #292e26 72%, #161914);
+      box-shadow: 0 24px 70px #0009, inset 0 1px #ffffff12, inset 0 -3px 8px #0008;
+    }
+    .monitor::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 8px;
+      border-radius: 11px;
+      pointer-events: none;
+      background: repeating-linear-gradient(to bottom, transparent 0, transparent 2px, #00000024 3px, #00000024 4px);
+      box-shadow: inset 0 0 35px #0008;
+      opacity: .46;
+    }
+    .monitor::after {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      inset: 8px;
+      border-radius: 11px;
+      pointer-events: none;
+      background: radial-gradient(ellipse at center, transparent 56%, #05070580 100%);
+    }
+    #jsdos {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      background: #050705;
+      box-shadow: 0 0 0 1px #090b08, 0 0 28px #000a;
+    }
+    .controlbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 12px 4px 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+    .controls-label { margin-right: 5px; color: #d3dac9; }
+    kbd {
+      min-width: 24px;
+      padding: 4px 7px;
+      border: 1px solid #51594a;
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      background: linear-gradient(#30362b, #20251e);
+      color: #e4e9d8;
+      text-align: center;
+      font: 11px monospace;
+      box-shadow: 0 2px 6px #0004;
+    }
+    .hint { text-align: right; }
+    .hint::before { content: "●"; margin-right: 7px; color: var(--amber); font-size: 9px; }
+
+    @media (max-width: 620px) {
+      .topbar { min-height: 60px; padding: 9px 14px; }
+      .brand-mark { width: 36px; height: 36px; }
+      .system-state { font-size: 9px; }
+      main { padding: 12px 8px; }
+      .monitor { border-radius: 12px; padding: 6px; }
+      .monitor::before, .monitor::after { inset: 6px; }
+      .controlbar { align-items: flex-start; flex-direction: column; gap: 10px; padding: 10px 4px 0; }
+      .hint { text-align: left; }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .led { animation: pulse 2.8s ease-in-out infinite; }
+      @keyframes pulse { 50% { opacity: .55; box-shadow: 0 0 4px #c3ee81; } }
+    }
   </style>
 </head>
 <body>
-  <header>
-    <h1>고인돌 1</h1>
-    <span class="keys">
-      이동 <kbd>점프: ↑</kbd><kbd>좌: ←</kbd><kbd>우: →</kbd><kbd>아래: ↓</kbd> ·
-      공격 <kbd>Space</kbd> ·
-      화면을 한 번 클릭해야 키 입력이 들어갑니다
-    </span>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">P31</div>
+      <div>
+        <h1>고인돌 1</h1>
+        <span class="subtitle">PREHISTORIK · ARCADE SYSTEM</span>
+      </div>
+    </div>
+    <div class="system-state"><span class="led" aria-hidden="true"></span> SYSTEM READY</div>
   </header>
-  <div id="jsdos"></div>
+
+  <main>
+    <div class="monitor-label"><span>DISPLAY / <strong>CRT-01</strong></span><span>VGA · 60 HZ</span></div>
+    <section class="monitor" aria-label="고인돌 1 게임 화면">
+      <div id="jsdos"></div>
+    </section>
+    <footer class="controlbar">
+      <div class="controls">
+        <span class="controls-label">조작</span>
+        <kbd>↑</kbd><kbd>←</kbd><kbd>→</kbd><kbd>↓</kbd><span>이동</span>
+        <kbd>SPACE</kbd><span>공격</span>
+      </div>
+      <span class="hint">게임 화면을 클릭하면 키 입력이 활성화됩니다</span>
+    </footer>
+  </main>
 
   <script src="js-dos/js-dos.js"></script>
   <script>
